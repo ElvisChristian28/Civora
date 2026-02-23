@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "SmartCity Dash",
+    "slug": "smartcity-dash",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "scheme": "smartcitydash",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#060b1a"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#060b1a"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "SmartCity Dash needs camera access to record dashcam footage."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "SmartCity Dash needs location to detect nearby road hazards."
+        }
+      ]
+    ]
+  }
+}

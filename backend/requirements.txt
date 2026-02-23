@@ -1,0 +1,20 @@
+# SmartCity Dash - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Web framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# Environment / config
+python-dotenv==1.0.1
+pydantic==2.10.4
+pydantic-settings==2.7.0
+
+# Supabase client
+supabase==2.11.0
+
+# HTTP (used by supabase client)
+httpx==0.28.1
+
+# File upload support (for future image upload endpoint)
+python-multipart==0.0.20
