@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
-import { useStore } from '../hooks/useStore';
+import { useStore } from '../../hooks/useStore';
 
 const { width } = Dimensions.get('window');
 

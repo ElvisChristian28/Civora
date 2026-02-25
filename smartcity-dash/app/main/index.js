@@ -11,20 +11,15 @@ import { useStore } from '../../hooks/useStore';
 const { width } = Dimensions.get('window');
 
 const HAZARD_TYPES = [
-  { id: 'damaged_road',        label: 'Damaged Road',    icon: '🛣️',  color: '#ef4444' },
-  { id: 'pothole',             label: 'Pothole',         icon: '🕳️',  color: '#f97316' },
-  { id: 'faded_markings',      label: 'Faded Markings',  icon: '➖',  color: '#eab308' },
-  { id: 'street_light_damage', label: 'Light Damage',    icon: '💡',  color: '#fbbf24' },
-  { id: 'overflow_bins',       label: 'Overflow Bins',   icon: '🗑️',  color: '#a855f7' },
-  { id: 'electric_pole_damage',label: 'Pole Damage',     icon: '⚡',  color: '#ec4899' },
-  { id: 'power_line_damage',   label: 'Power Line',      icon: '🔌',  color: '#06b6d4' },
-  { id: 'drainage_issues',     label: 'Drainage',        icon: '💧',  color: '#3b82f6' },
-  { id: 'vandalism',           label: 'Vandalism',       icon: '✕',   color: '#8b5cf6' },
-  { id: 'illegal_parking',     label: 'Illegal Parking', icon: '🅿️',  color: '#f43f5e' },
-  { id: 'fallen_trees',        label: 'Fallen Trees',    icon: '🌳',  color: '#10b981' },
+  { id: 'pothole',            label: 'Pothole',     icon: '⚠',  color: '#ff4444' },
+  { id: 'broken_streetlight', label: 'Streetlight', icon: '💡', color: '#ffaa00' },
+  { id: 'waterlogging',       label: 'Flooding',    icon: '〜', color: '#0099ff' },
+  { id: 'traffic_congestion', label: 'Traffic',     icon: '⬡',  color: '#ff6600' },
+  { id: 'accident',           label: 'Accident',    icon: '✕',  color: '#ff0044' },
+  { id: 'road_debris',        label: 'Debris',      icon: '◼',  color: '#aa44ff' },
 ];
 
-const SEV_COLORS = { low: '#10b981', medium: '#f59e0b', high: '#ef4444', critical: '#dc2626' };
+const SEV_COLORS = { low: '#00ff88', medium: '#ffaa00', high: '#ff4444', critical: '#ff0044' };
 
 export default function DashcamScreen() {
   const { driverId, nearbyHazards, nearbyHazardsCount, fetchNearbyHazards, reportHazard } = useStore();
@@ -273,11 +268,7 @@ export default function DashcamScreen() {
       {showPicker && (
         <View style={styles.picker}>
           <Text style={styles.pickerTitle}>SELECT HAZARD TYPE</Text>
-          <ScrollView 
-            style={styles.pickerScroll}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.pickerGridContainer}
-          >
+          <View style={styles.pickerGrid}>
             {HAZARD_TYPES.map(h => (
               <TouchableOpacity
                 key={h.id}
@@ -289,7 +280,7 @@ export default function DashcamScreen() {
                 <Text style={styles.pickerItemLabel}>{h.label}</Text>
               </TouchableOpacity>
             ))}
-          </ScrollView>
+          </View>
         </View>
       )}
 
@@ -333,208 +324,165 @@ export default function DashcamScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f1419' },
+  container: { flex: 1, backgroundColor: '#060b1a' },
 
-  // Header - Minimalist Pro
+  // Header
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 10,
-    borderBottomWidth: 0,
-    backgroundColor: 'rgba(15,20,25,0.98)',
+    paddingHorizontal: 16, paddingVertical: 12,
+    borderBottomWidth: 1, borderBottomColor: 'rgba(0,212,255,0.1)',
   },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, width: 100 },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 7, width: 90 },
   recDot: {
-    width: 10, height: 10, borderRadius: 5, backgroundColor: '#ff4757',
-    shadowColor: '#ff4757', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.8, shadowRadius: 4,
+    width: 9, height: 9, borderRadius: 5, backgroundColor: '#ff3333',
+    shadowColor: '#ff3333', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 6,
   },
-  recLabel: { color: 'rgba(255,255,255,0.35)', fontSize: 11, fontWeight: '600', letterSpacing: 1.5 },
-  recLabelActive: { color: '#ff4757' },
-  headerTitle: { color: '#fff', fontSize: 14, fontWeight: '800', letterSpacing: 3 },
+  recLabel: { color: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: '700', letterSpacing: 2 },
+  recLabelActive: { color: '#ff3333' },
+  headerTitle: { color: '#fff', fontSize: 13, fontWeight: '900', letterSpacing: 5 },
   camToggleBtn: {
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8,
-    borderWidth: 0,
-    backgroundColor: 'rgba(255,71,87,0.15)', width: 100, alignItems: 'center',
+    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6,
+    borderWidth: 1, borderColor: 'rgba(0,212,255,0.35)',
+    backgroundColor: 'rgba(0,212,255,0.07)', width: 90, alignItems: 'center',
   },
-  camToggleBtnActive: { backgroundColor: 'rgba(255,71,87,0.25)' },
-  camToggleText: { color: '#ff4757', fontSize: 10, fontWeight: '700', letterSpacing: 1 },
-  camToggleTextActive: { color: '#ff4757' },
+  camToggleBtnActive: { borderColor: '#ff3333', backgroundColor: 'rgba(255,51,51,0.1)' },
+  camToggleText: { color: '#00d4ff', fontSize: 9, fontWeight: '800', letterSpacing: 1 },
+  camToggleTextActive: { color: '#ff3333' },
 
-  // Viewfinder - Modern Card Design  
+  // Viewfinder
   viewfinderWrap: {
-    height: 210, backgroundColor: '#1a2332',
+    height: 220, backgroundColor: '#050a14',
     position: 'relative', overflow: 'hidden',
-    borderRadius: 20, marginHorizontal: 12, marginTop: 10,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3, shadowRadius: 12, elevation: 10,
   },
   hudGrid: { ...StyleSheet.absoluteFillObject },
-  gridLine: { position: 'absolute', backgroundColor: 'rgba(100,200,255,0.04)' },
+  gridLine: { position: 'absolute', backgroundColor: 'rgba(0,212,255,0.06)' },
   gridV: { width: 1, height: '100%' },
   gridH: { height: 1, width: '100%' },
   scanLine: {
-    position: 'absolute', left: 0, right: 0, height: 2,
-    backgroundColor: '#00ffaa', opacity: 0.5,
-    shadowColor: '#00ffaa', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 10,
+    position: 'absolute', left: 0, right: 0, height: 1.5,
+    backgroundColor: '#00d4ff', opacity: 0.45,
+    shadowColor: '#00d4ff', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 8,
   },
 
-  // Corners - Subtle Modern
-  corner: { position: 'absolute', width: 20, height: 20, borderColor: 'rgba(100,200,255,0.25)' },
-  cTL: { top: 12, left: 12, borderTopWidth: 2, borderLeftWidth: 2 },
-  cTR: { top: 12, right: 12, borderTopWidth: 2, borderRightWidth: 2 },
-  cBL: { bottom: 12, left: 12, borderBottomWidth: 2, borderLeftWidth: 2 },
-  cBR: { bottom: 12, right: 12, borderBottomWidth: 2, borderRightWidth: 2 },
+  // Corners
+  corner: { position: 'absolute', width: 18, height: 18, borderColor: '#00d4ff' },
+  cTL: { top: 10, left: 10, borderTopWidth: 2, borderLeftWidth: 2 },
+  cTR: { top: 10, right: 10, borderTopWidth: 2, borderRightWidth: 2 },
+  cBL: { bottom: 10, left: 10, borderBottomWidth: 2, borderLeftWidth: 2 },
+  cBR: { bottom: 10, right: 10, borderBottomWidth: 2, borderRightWidth: 2 },
 
-  // Crosshair - Minimal
-  crossH: { position: 'absolute', top: '50%', left: '20%', right: '20%', height: 1, backgroundColor: 'rgba(100,200,255,0.2)' },
-  crossV: { position: 'absolute', left: '50%', top: '20%', bottom: '20%', width: 1, backgroundColor: 'rgba(100,200,255,0.2)' },
+  // Crosshair
+  crossH: { position: 'absolute', top: '50%', left: '25%', right: '25%', height: 1, backgroundColor: 'rgba(0,212,255,0.3)' },
+  crossV: { position: 'absolute', left: '50%', top: '25%', bottom: '25%', width: 1, backgroundColor: 'rgba(0,212,255,0.3)' },
 
   // Placeholder
   placeholderCenter: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    alignItems: 'center', justifyContent: 'center', gap: 8,
+    alignItems: 'center', justifyContent: 'center', gap: 6,
   },
-  placeholderIcon: { fontSize: 32, color: 'rgba(100,200,255,0.2)' },
-  placeholderText: { color: 'rgba(100,200,255,0.25)', fontSize: 11, fontWeight: '600', letterSpacing: 1.5 },
+  placeholderIcon: { fontSize: 28, color: 'rgba(0,212,255,0.18)' },
+  placeholderText: { color: 'rgba(0,212,255,0.22)', fontSize: 10, fontWeight: '700', letterSpacing: 2 },
 
   // Camera HUD overlay
   camHUD: { ...StyleSheet.absoluteFillObject },
   recIndicator: {
-    position: 'absolute', top: 16, left: '50%', marginLeft: -25,
-    flexDirection: 'row', alignItems: 'center', gap: 6,
+    position: 'absolute', top: 14, left: '50%', marginLeft: -24,
+    flexDirection: 'row', alignItems: 'center', gap: 5,
   },
   recIndicatorDot: {
-    width: 9, height: 9, borderRadius: 5, backgroundColor: '#ff4757',
-    shadowColor: '#ff4757', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.9, shadowRadius: 5,
+    width: 8, height: 8, borderRadius: 4, backgroundColor: '#ff3333',
+    shadowColor: '#ff3333', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 6,
   },
-  recIndicatorText: { color: '#ff4757', fontSize: 12, fontWeight: '800', letterSpacing: 2 },
+  recIndicatorText: { color: '#ff3333', fontSize: 11, fontWeight: '900', letterSpacing: 2 },
   recordBtnWrap: {
-    position: 'absolute', bottom: 16, alignSelf: 'center',
-    left: 0, right: 0, alignItems: 'center', gap: 6,
+    position: 'absolute', bottom: 14, alignSelf: 'center',
+    left: 0, right: 0, alignItems: 'center', gap: 4,
   },
   recordBtn: {
-    width: 60, height: 60, borderRadius: 30,
-    borderWidth: 2.5, borderColor: '#fff',
+    width: 56, height: 56, borderRadius: 28,
+    borderWidth: 3, borderColor: '#fff',
     backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'center',
   },
-  recordBtnActive: { borderColor: '#ff4757' },
+  recordBtnActive: { borderColor: '#ff3333' },
   recordBtnInner: {
-    width: 38, height: 38, borderRadius: 19, backgroundColor: '#ff4757',
+    width: 36, height: 36, borderRadius: 18, backgroundColor: '#ff3333',
   },
-  recordBtnInnerStop: { borderRadius: 5, width: 24, height: 24 },
-  recordBtnLabel: { color: 'rgba(255,255,255,0.75)', fontSize: 10, fontWeight: '700', letterSpacing: 1.5 },
+  recordBtnInnerStop: { borderRadius: 4, width: 22, height: 22 },
+  recordBtnLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 9, fontWeight: '700', letterSpacing: 2 },
 
-  // HUD positions - Modern Info Display
-  hudTL: { position: 'absolute', top: 14, left: 14, backgroundColor: 'rgba(0,0,0,0.35)', paddingHorizontal: 10, paddingVertical: 8, borderRadius: 8 },
-  hudTR: { position: 'absolute', top: 14, right: 14, alignItems: 'flex-end', backgroundColor: 'rgba(0,0,0,0.35)', paddingHorizontal: 10, paddingVertical: 8, borderRadius: 8 },
-  hudBL: { position: 'absolute', bottom: 14, left: 14 },
-  hudLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: '600', letterSpacing: 1, marginBottom: 2 },
-  hudVal: { color: '#fff', fontSize: 10, fontWeight: '700' },
-  hudSpeed: { color: '#00ffaa', fontSize: 24, fontWeight: '900' },
+  // HUD positions
+  hudTL: { position: 'absolute', top: 12, left: 12 },
+  hudTR: { position: 'absolute', top: 12, right: 12, alignItems: 'flex-end' },
+  hudBL: { position: 'absolute', bottom: 12, left: 12 },
+  hudLabel: { color: 'rgba(0,212,255,0.55)', fontSize: 8, fontWeight: '700', letterSpacing: 2, marginBottom: 2 },
+  hudVal: { color: '#00d4ff', fontSize: 9, fontWeight: '600' },
+  hudSpeed: { color: '#00ff88', fontSize: 20, fontWeight: '900' },
   hazardBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: 'rgba(255,71,87,0.15)', borderWidth: 1,
-    borderColor: 'rgba(255,71,87,0.4)', borderRadius: 10,
-    paddingHorizontal: 12, paddingVertical: 7,
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: 'rgba(255,68,68,0.15)', borderWidth: 1,
+    borderColor: 'rgba(255,68,68,0.4)', borderRadius: 6,
+    paddingHorizontal: 8, paddingVertical: 4,
   },
-  hazardBadgeNum: { color: '#ff4757', fontSize: 22, fontWeight: '900' },
-  hazardBadgeLabel: { color: 'rgba(255,71,87,0.85)', fontSize: 9, fontWeight: '700', letterSpacing: 0.5, lineHeight: 11 },
+  hazardBadgeNum: { color: '#ff4444', fontSize: 20, fontWeight: '900' },
+  hazardBadgeLabel: { color: 'rgba(255,68,68,0.8)', fontSize: 8, fontWeight: '700', letterSpacing: 1, lineHeight: 11 },
 
-  // Flash overlay - Celebration
+  // Flash overlay
   reportFlash: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,255,170,0.12)', borderWidth: 2, borderColor: '#00ffaa',
-    alignItems: 'center', justifyContent: 'center', gap: 6,
+    backgroundColor: 'rgba(0,255,136,0.1)', borderWidth: 2, borderColor: '#00ff88',
+    alignItems: 'center', justifyContent: 'center', gap: 4,
   },
-  flashIcon: { fontSize: 36 },
-  flashTitle: { color: '#00ffaa', fontSize: 18, fontWeight: '900', letterSpacing: 2 },
-  flashSub: { color: 'rgba(0,255,170,0.7)', fontSize: 11, letterSpacing: 1 },
+  flashIcon: { fontSize: 30 },
+  flashTitle: { color: '#00ff88', fontSize: 16, fontWeight: '900', letterSpacing: 3 },
+  flashSub: { color: 'rgba(0,255,136,0.65)', fontSize: 10, letterSpacing: 2 },
 
-  // Report button - Premium CTA
+  // Report button
   reportBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
-    marginHorizontal: 16, marginTop: 6, marginBottom: 8, paddingVertical: 11,
-    backgroundColor: '#ff4757', 
-    borderRadius: 12,
-    borderWidth: 0,
-    elevation: 10,
-    shadowColor: '#ff4757',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
+    marginHorizontal: 16, marginTop: 12, paddingVertical: 14,
+    backgroundColor: 'rgba(255,68,68,0.08)', borderRadius: 10,
+    borderWidth: 1, borderColor: 'rgba(255,68,68,0.45)',
   },
-  reportBtnDisabled: { opacity: 0.55 },
-  reportBtnIcon: { fontSize: 17, color: '#fff', fontWeight: '800' },
-  reportBtnText: { color: '#fff', fontSize: 13, fontWeight: '900', letterSpacing: 0.8 },
+  reportBtnDisabled: { opacity: 0.45 },
+  reportBtnIcon: { fontSize: 16, color: '#ff4444' },
+  reportBtnText: { color: '#ff4444', fontSize: 13, fontWeight: '900', letterSpacing: 2 },
 
-  // Hazard picker - Modern Grid Design
-  picker: { 
-    paddingHorizontal: 14, paddingTop: 6, paddingBottom: 100, maxHeight: '70%',
-    backgroundColor: 'transparent',
-  },
-  pickerScroll: { flex: 0 },
-  pickerGridContainer: {
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    gap: 12,
-    justifyContent: 'space-between',
-    paddingBottom: 20,
-  },
-  pickerTitle: { color: 'rgba(255,255,255,0.65)', fontSize: 11, fontWeight: '700', letterSpacing: 1, marginBottom: 8, textAlign: 'center' },
-  pickerGrid: { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    gap: 8,
-    justifyContent: 'space-between',
-  },
+  // Hazard picker
+  picker: { paddingHorizontal: 16, paddingTop: 10, flex: 1 },
+  pickerTitle: { color: 'rgba(255,255,255,0.35)', fontSize: 9, fontWeight: '700', letterSpacing: 2, marginBottom: 10 },
+  pickerGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   pickerItem: {
-    width: (width - 56) / 3, 
-    alignItems: 'center', 
-    paddingVertical: 10,
-    borderRadius: 14, 
-    borderWidth: 1.5,
-    backgroundColor: 'rgba(255,255,255,0.05)', 
-    gap: 6,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    borderColor: 'rgba(255,255,255,0.1)',
+    width: (width - 56) / 3, alignItems: 'center', paddingVertical: 14,
+    borderRadius: 10, borderWidth: 1, backgroundColor: 'rgba(255,255,255,0.03)', gap: 6,
   },
-  pickerItemIcon: { fontSize: 28 },
-  pickerItemLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 9, fontWeight: '700', letterSpacing: 0.3, textAlign: 'center', lineHeight: 12 },
+  pickerItemIcon: { fontSize: 22 },
+  pickerItemLabel: { color: 'rgba(255,255,255,0.55)', fontSize: 10, fontWeight: '600', letterSpacing: 0.5 },
 
-  // Nearby hazards - Premium List
-  nearbySection: { paddingTop: 16, flex: 1, paddingBottom: 20, backgroundColor: 'transparent' },
+  // Nearby hazards
+  nearbySection: { paddingTop: 10, flex: 1 },
   nearbyHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    paddingHorizontal: 16, paddingBottom: 14, paddingTop: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingHorizontal: 16, paddingBottom: 8,
   },
-  nearbyTitle: { color: 'rgba(255,255,255,0.55)', fontSize: 12, fontWeight: '700', letterSpacing: 1.2 },
+  nearbyTitle: { color: 'rgba(255,255,255,0.35)', fontSize: 9, fontWeight: '700', letterSpacing: 2 },
   nearbyCountBadge: {
-    backgroundColor: 'rgba(100,200,255,0.15)', borderRadius: 14,
-    paddingHorizontal: 12, paddingVertical: 4,
-    borderWidth: 1, borderColor: 'rgba(100,200,255,0.3)',
+    backgroundColor: 'rgba(0,212,255,0.12)', borderRadius: 10,
+    paddingHorizontal: 8, paddingVertical: 2,
+    borderWidth: 1, borderColor: 'rgba(0,212,255,0.3)',
   },
-  nearbyCountText: { color: '#64c8ff', fontSize: 11, fontWeight: '800', letterSpacing: 1 },
-  nearbyScroll: { paddingHorizontal: 16, paddingBottom: 12, gap: 14 },
-  noHazards: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, paddingVertical: 28, gap: 10 },
-  noHazardsIcon: { fontSize: 32, color: '#10b981' },
-  noHazardsText: { color: 'rgba(255,255,255,0.45)', fontSize: 14, fontWeight: '600' },
+  nearbyCountText: { color: '#00d4ff', fontSize: 10, fontWeight: '700' },
+  nearbyScroll: { paddingHorizontal: 16, paddingBottom: 8, gap: 10 },
+  noHazards: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, paddingVertical: 20, gap: 6 },
+  noHazardsIcon: { fontSize: 22, color: '#00ff88' },
+  noHazardsText: { color: 'rgba(255,255,255,0.3)', fontSize: 12 },
   hazardCard: {
-    width: 170, backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
-    borderLeftWidth: 6, padding: 18, gap: 10,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
+    width: 130, backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+    borderLeftWidth: 3, padding: 12, gap: 4,
   },
-  hazardCardIcon: { fontSize: 32, marginBottom: 2 },
-  hazardCardType: { color: '#fff', fontSize: 13, fontWeight: '700', letterSpacing: 0.3 },
-  sevBadge: { alignSelf: 'flex-start', paddingHorizontal: 9, paddingVertical: 4, borderRadius: 7 },
-  sevBadgeText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.8 },
-  hazardCardConf: { color: 'rgba(255,255,255,0.45)', fontSize: 10, fontWeight: '600' },
+  hazardCardIcon: { fontSize: 20, marginBottom: 2 },
+  hazardCardType: { color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  sevBadge: { alignSelf: 'flex-start', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  sevBadgeText: { fontSize: 8, fontWeight: '700', letterSpacing: 1 },
+  hazardCardConf: { color: 'rgba(255,255,255,0.35)', fontSize: 10 },
 });

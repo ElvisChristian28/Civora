@@ -1,41 +1,70 @@
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TABS = [
-  { name: 'index',    label: 'DASHCAM',  icon: '◎', activeIcon: '◎' },
-  { name: 'history',  label: 'HISTORY',  icon: '≡',  activeIcon: '≡'  },
-  { name: 'settings', label: 'SETTINGS', icon: '⊙', activeIcon: '⊙' },
+  { name: 'index',    label: 'Dashcam',  icon: '🎥' },
+  { name: 'history',  label: 'History',  icon: '📋' },
+  { name: 'settings', label: 'Settings', icon: '⚙️' },
 ];
 
-function TabIcon({ focused, icon, label }) {
+function TabBar({ state, descriptors, navigation }) {
+  const insets = useSafeAreaInsets();
+  const bottomSafe = Math.max(insets.bottom, 16);
+
   return (
-    <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
-      {focused && <View style={styles.iconGlow} />}
-      <Text style={[styles.icon, focused && styles.iconActive]}>{icon}</Text>
-      <Text style={[styles.label, focused && styles.labelActive]}>{label}</Text>
+    <View style={[styles.tabBarContainer, { paddingBottom: bottomSafe }]}>
+      <View style={styles.tabBar}>
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const label = options.title || route.name;
+          const isFocused = state.index === index;
+          const tabConfig = TABS[index];
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              preventDefault: false,
+            });
+
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
+
+          return (
+            <Pressable
+              key={route.key}
+              onPress={onPress}
+              style={[styles.tabItem, isFocused && styles.tabItemActive]}
+            >
+              <View style={[styles.iconBox, isFocused && styles.iconBoxActive]}>
+                <Text style={styles.icon}>{tabConfig.icon}</Text>
+              </View>
+              <Text
+                style={[styles.label, isFocused && styles.labelActive]}
+                numberOfLines={1}
+              >
+                {label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
 export default function MainLayout() {
-  const insets = useSafeAreaInsets();
-  const bottomSafe = Math.max(insets.bottom, 8);
-
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarStyle: [
-          styles.tabBar,
-          { bottom: bottomSafe + 8, height: 68 },
-        ],
-        tabBarItemStyle: styles.tabBarItem,
-        tabBarActiveTintColor: '#00d4ff',
-        tabBarInactiveTintColor: 'rgba(255,255,255,0.3)',
-        tabBarHideOnKeyboard: true,
+        sceneContainerStyle: { backgroundColor: '#0f172a' },
       }}
+      tabBar={(props) => <TabBar {...props} />}
     >
       {TABS.map((tab) => (
         <Tabs.Screen
@@ -43,9 +72,6 @@ export default function MainLayout() {
           name={tab.name}
           options={{
             title: tab.label,
-            tabBarIcon: ({ focused }) => (
-              <TabIcon focused={focused} icon={tab.icon} label={tab.label} />
-            ),
           }}
         />
       ))}
@@ -54,70 +80,75 @@ export default function MainLayout() {
 }
 
 const styles = StyleSheet.create({
+  tabBarContainer: {
+    backgroundColor: '#060b1a',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+  },
   tabBar: {
-    position: 'absolute',
-    left: 20,
-    right: 20,
-    backgroundColor: '#0d1529',
-    borderRadius: 24,
-    borderWidth: 1,
+    flexDirection: 'row',
+    backgroundColor: 'rgba(13, 21, 41, 0.95)',
+    borderRadius: 16,
+    borderWidth: 1.5,
     borderColor: 'rgba(0, 212, 255, 0.2)',
-    elevation: 20,
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    gap: 4,
+    elevation: 25,
+    shadowColor: '#00d4ff',
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+  },
+  tabItem: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    gap: 6,
+    minHeight: 80,
+  },
+  tabItemActive: {
+    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 212, 255, 0.25)',
+  },
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+  },
+  iconBoxActive: {
+    backgroundColor: 'rgba(0, 212, 255, 0.15)',
+    borderColor: 'rgba(0, 212, 255, 0.4)',
+    elevation: 8,
     shadowColor: '#00d4ff',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
-    shadowRadius: 20,
-    borderTopWidth: 0,
-    paddingBottom: 0,
-    paddingHorizontal: 8,
-  },
-  tabBarItem: {
-    height: 68,
-    paddingVertical: 0,
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    gap: 4,
-    position: 'relative',
-    minWidth: 70,
-  },
-  iconWrapActive: {
-    backgroundColor: 'rgba(0, 212, 255, 0.1)',
-  },
-  iconGlow: {
-    position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#00d4ff',
-    opacity: 0.08,
+    shadowRadius: 8,
   },
   icon: {
     fontSize: 24,
-    color: 'rgba(255, 255, 255, 0.3)',
-    lineHeight: 28,
-  },
-  iconActive: {
-    color: '#00d4ff',
-    textShadowColor: '#00d4ff',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
   },
   label: {
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: '600',
-    letterSpacing: 0.8,
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: 'rgba(255, 255, 255, 0.45)',
+    letterSpacing: 0.3,
   },
   labelActive: {
-    color: '#00d4ff',
+    fontSize: 12,
     fontWeight: '700',
+    color: '#00d4ff',
+    letterSpacing: 0.4,
   },
 });
